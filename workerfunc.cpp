@@ -1,10 +1,44 @@
 #include "workerfunc.h"
 #include <memory> //std::unique_ptr<T>
+#include <random>
 
 
 void work::buildVector(std::vector<CharNode>& v) {
 	for (int c = 0; c != 128; ++c)
 		v.push_back(CharNode((char)c));
+}
+
+int work::generateBookfile(char* argv[]) {
+
+	std::cout << "--- Writing new book file to: " << argv[2] << std::endl;
+	std::ofstream newBook(argv[2]);
+
+	if (!newBook.good()) {
+		std::cerr << argv[2] << " could not be opened or accessed, terminating program.";
+		return EXIT_FAILURE;
+	}
+
+	// pick a number of lines between 1000 and 5000 pseudo_randomly
+	// pick a number of offsets between 30 and 150 ^
+	const int MINLINE = 1000;
+	const int MAXLINE = 5000;
+	const int MINOFFSET = 30;
+	const int MAXOFFSET = 150;
+
+	std::default_random_engine gen;
+	const std::uniform_int_distribution<int> newLineDistance(MINLINE, MAXLINE);
+	const int numLines = newLineDistance(gen);
+
+	const std::uniform_int_distribution<int> offsetDisance(MINOFFSET, MAXOFFSET);
+	const int numOffset = offsetDisance(gen);
+
+	// fill the file with the random number of lines/offsets.. each output is a 
+	// rand() call between 0-128 that is casted to an char to obtain the ascii table 
+	for (int c = 0; c < numLines; ++c)
+		for (int x = 0; x < numOffset; ++x)
+			newBook << char(rand() % 128);
+	
+	return EXIT_SUCCESS;
 }
 
 std::vector<CharNode> work::readInBookFile(char* argv[], std::vector<CharNode>::iterator& vBookIter) {

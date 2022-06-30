@@ -4,6 +4,8 @@
 namespace work {
 	void buildVector(std::vector<CharNode>& v);
 
+	int generateBookfile(char* argv[]);
+
 	int executeEncoding(char* argv[]);
 
 	int executeDecoding(char* argv[]);

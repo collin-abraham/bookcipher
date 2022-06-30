@@ -4,7 +4,10 @@
 
 CharNode::CharNode (char c) { _top = c; }
 
-void CharNode::resetIter() { _loc_iter = _locations.begin(); }
+void CharNode::resetIter() { 
+	if(_loc_iter != _locations.begin())
+		_loc_iter = _locations.begin();
+}
 
 void CharNode::incrementIter() {
 	if (_loc_iter != _locations.end())
