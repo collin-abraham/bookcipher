@@ -1,5 +1,15 @@
+/* nodeclasses.h
+* 2022-06-30
+* Collin Abraham
+* 
+* Class declarations used throughout the program 
+*/
+
 #include "utility.h"
 
+/* A class which uses a single unique character in a vector to generate a vector 
+* of lines and offsets to explain where that char is found in the bookfile
+*/
 class CharNode {
 
 public:
@@ -21,7 +31,11 @@ public:
 
 };
 
+/* A class which uses a line number to generate a vector
+* of chars and offsets to explain where on that line you may find the corresponding pairs 
+*/
 class LineNode {
+
 public:
 	int _top;
 	std::vector<std::pair<char, int>> _locations;
@@ -33,4 +47,15 @@ public:
 
 	void addLoc(char c, int offset);
 
+};
+
+/* simple class to prevent passing pointer to arrays around the program, as suggested by Bjarne Stoustrup */
+class Arguments {
+
+public:
+	std::vector<std::string> _args;
+
+	Arguments(char* argv[], int num);
+
+	std::string returnArg(int index);
 };
