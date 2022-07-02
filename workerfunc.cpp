@@ -7,8 +7,7 @@
 */
 
 #include "workerfunc.h"
-#include <memory> //std::unique_ptr<T>
-#include <random>
+
 
 /* build a simple vector that contains all of the ASCII table 0-128, used by readInBookFile*/
 void work::buildVector(std::vector<CharNode>& v) {
@@ -34,15 +33,7 @@ int work::generateBookfile(const std::unique_ptr<Arguments>& argv) {
 	const int MAXLINE = 5000;
 	const int MINOFFSET = 30;
 	const int MAXOFFSET = 150;
-
-	// these are all the reasonable ascii characters that would be found in a text file to be encoded 
-	const std::vector<char> charPossibilites{
-	'0','1','2','3','4','5','6','7','8','9',
-	'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-	'!','@','#','$','%','^','&','*','(',')','-','_','+','=','{','}','|','\\',';',':','\'','"',',','<','.','>','/','?',
-	'\n'
-	};
+	const std::vector<char> charPossibilites = utility::returnAcceptedCharsVector();
 
 	std::default_random_engine gen;
 	const std::uniform_int_distribution<int> newLineDistance(MINLINE, MAXLINE);
@@ -53,8 +44,6 @@ int work::generateBookfile(const std::unique_ptr<Arguments>& argv) {
 
 	const std::uniform_int_distribution<int> randomChar(0, (int)charPossibilites.size() - 1);
 
-
-	//auto pullChar = charPossibilites.at(charIndex);
 
 	// fill the file with the random number of lines/offsets.. each output is a 
 	// a random index between 0 - size() is chosen and the char sitting there is pushed into the new file 
@@ -95,7 +84,7 @@ std::vector<CharNode> work::readInBookFile(const std::unique_ptr<Arguments>& arg
 		// in this case we prompt an error and exit the program by returning an empty bookfile vector
 		strLineTester = utility::acceptedChars(strLine, checkVec);
 		if (strLineTester != "") {
-			utility::invalidCharacter(strLineTester, line);
+			utility::invalidCharacter(strLineTester, line, argv->returnArg(2));
 			utility::showValidChars();
 			vBook.clear();
 			return vBook;
@@ -149,7 +138,7 @@ std::vector<LineNode> work::readInBookFile(const std::unique_ptr<Arguments>& arg
 		// in this case we prompt an error and exit the program by returning an empty bookfile vector
 		strLineTester = utility::acceptedChars(strLine, checkVec);
 		if (strLineTester != "") {
-			utility::invalidCharacter(strLineTester, line);
+			utility::invalidCharacter(strLineTester, line, argv->returnArg(2));
 			vBook.clear();
 			return vBook;
 		}
@@ -217,7 +206,23 @@ int work::executeEncoding(const std::unique_ptr<Arguments>& argv) {
 	// read in a line that has two integers and a new line 
 
 	std::string strLine = "";
+	std::string strLineTester = "";
+	int line = 1; // only used in error checking for this part 
+	std::vector<char> checkVec = utility::returnAcceptedCharsVector();
+
 	while (std::getline(cipherIn, strLine)) {
+
+		// check that the string line has all valid characters 
+		// a string which is not empty is formatted and returned with the problem char
+		// in this case we prompt an error and exit the program by returning an empty bookfile vector
+		strLineTester = utility::acceptedChars(strLine, checkVec);
+		if (strLineTester != "") {
+			utility::invalidCharacter(strLineTester, line, argv->returnArg(3));
+			utility::showValidChars();
+			utility::deletePartialFile(argv->returnArg(4));
+			return EXIT_FAILURE;
+		}
+
 		for (const auto& currentChar : strLine) {
 
 			// point the book iterator to where it matches the current char 
@@ -227,9 +232,11 @@ int work::executeEncoding(const std::unique_ptr<Arguments>& argv) {
 			vBookIter->incrementIter();
 		}
 		vBookIter = std::find_if(vBook.begin(), vBook.end(), [](CharNode& x) { return x.getChar() == '\n'; });
-		//vBookIter->incrementIter();
+	
 		cipherOut << vBookIter->_loc_iter->first << " " << vBookIter->_loc_iter->second << '\n';
 		vBookIter->incrementIter();
+
+		++line;
 	}
 
 	std::cout << "--- Successfully wrote encoded ciper!" << std::endl;
@@ -274,8 +281,16 @@ int work::executeDecoding(const std::unique_ptr<Arguments>& argv) {
 	int lineNum = 0;
 	int offsetNum = 0;	
 
-	while (cipherIn >> lineNum >> std::ws >> offsetNum){
-		
+	std::string lineTester = utility::checkEncodedFile(argv->returnArg(3));
+	if (lineTester != "") {
+		utility::invalidCharacter(lineTester, argv->returnArg(3));
+		utility::showValidDecodedExample();
+		return EXIT_FAILURE;
+	}
+	
+
+	while (cipherIn >> lineNum >> std::ws >> offsetNum) {
+	
 		vBookIter = std::find_if(vBook.begin(), vBook.end(), [lineNum](LineNode& x) { return x.getLineValue() == lineNum; });
 		
 		vBookIter->_loc_iter = std::find_if(
@@ -296,5 +311,106 @@ int work::executeDecoding(const std::unique_ptr<Arguments>& argv) {
 	cipherOut.close();
 	
 	return EXIT_SUCCESS;
+}
+
+
+
+bool work::sortCondition(encodedObj& lhs, encodedObj& rhs) {
+	
+	if (lhs._line < rhs._line)
+		return true;
+	if (rhs._line < lhs._line)
+		return false;
+	if (lhs._line == rhs._line)
+		if (lhs._offset < rhs._offset)
+			return true;
+		if (rhs._offset < lhs._offset)
+			return false;
+}
+
+int work::executeDecoding2(const std::unique_ptr<Arguments>& argv) {
+	
+	
+	// prompt user and attempt to open file that is already encoded, fail program if there's an issue opening 
+	std::cout << "--- Opening encoded file: " << argv->returnArg(3) << std::endl;
+	std::ifstream cipherIn(argv->returnArg(3));
+	if (!cipherIn.good()) {
+		std::cerr << argv->returnArg(3) << " could not be opened or accessed, terminating program.";
+		return EXIT_FAILURE;
+	}
+
+	// ------------------------------------------------------------------------------------------------------
+
+	std::cout << "--- Writing decoded ciper to: " << argv->returnArg(4) << std::endl;
+	std::ofstream cipherOut(argv->returnArg(4));
+	if (!cipherOut.good()) {
+		std::cerr << argv->returnArg(4) << " could not be opened or accessed, terminating program.";
+		return EXIT_FAILURE;
+	}
+	
+	std::string lineTester = utility::checkEncodedFile(argv->returnArg(3));
+	if (lineTester != "") {
+		utility::invalidCharacter(lineTester, argv->returnArg(3));
+		utility::showValidDecodedExample();
+		return EXIT_FAILURE;
+	}
+
+	/* alternate concept of decoding:
+	-read in bookfile
+	-read in encoded file -> check for file integrity
+	-attach original position index to each line, tuple<int,int,int> maybe?
+	-sort by line by offset
+	-iterate through bookfile once, match the lines and offsets to chars
+	-push the characters+index into a vector
+	-sort vector based on index attached
+	-push reorganized file out*/
+
+
+	// build all the line, offset, index pairs
+	std::vector<encodedObj> vEncodedObj;
+	int lineNum = 0;
+	int offsetNum = 0;
+	int idxCounter = 0;
+	while (cipherIn >> lineNum >> std::ws >> offsetNum) {
+		vEncodedObj.emplace_back(encodedObj(lineNum, offsetNum, idxCounter, 'x'));
+		++idxCounter;
+	}
+	
+	// sort by line by offset 
+	std::sort(begin(vEncodedObj), end(vEncodedObj), [](auto& lhs, auto& rhs) { return sortCondition(lhs, rhs); });
+
+	// iterate through the bookfile and match line/offsets with chars it encounters
+	//while we can read in lines from the bookfile
+	std::ifstream bookFile(argv->returnArg(2));
+	int line = 1;	//txt files start at line 1, not index 0
+	int offset = 0;
+	std::string strLine = "";
+	std::string strLineTester = "";
+	std::vector<char> checkVec = utility::returnAcceptedCharsVector();
+
+	std::vector<encodedObj>::iterator it = vEncodedObj.begin();
+
+	/* We read in lines from the bookfile 
+	* For each line we check, we iterate through one char at a time
+	* We look for matches on line and offset to the iterator of lines/offsets
+	* When we find a match, we set that character in the vector obj to its corresponding line/offset 
+	*/
+	while (std::getline(bookFile, strLine)) {
+		for (const char& x : strLine) {
+			if (line == it->_line && offset == it->_offset) {
+				it->_ch = x;
+				++it;
+			}
+			++it;
+			++offset;
+		}
+		offset = 0;
+		++line;
+	}
+	/*for (auto x : vEncodedObj)
+		std::cout << x._line << " " << x._offset << " " << x._idx << " " <<std::endl;*/
+
+
+
 }
 

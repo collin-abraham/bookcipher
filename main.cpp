@@ -35,7 +35,7 @@ int main(int argc, char* argv []) {
 
 		else if (flagArgs == "-d" || flagArgs == "-D") {
 
-			returnStatus = work::executeDecoding(mainArgv);
+			returnStatus = work::executeDecoding2(mainArgv);
 			if (returnStatus == 1)
 				return EXIT_FAILURE;
 			else

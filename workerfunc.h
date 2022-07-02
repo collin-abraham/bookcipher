@@ -17,6 +17,10 @@ namespace work {
 
 	int executeDecoding(const std::unique_ptr<Arguments>& argv);
 
+	bool sortCondition(encodedObj& lhs, encodedObj& rhs);
+
+	int executeDecoding2(const std::unique_ptr<Arguments>& argv);
+
 	std::vector<CharNode> readInBookFile(const std::unique_ptr<Arguments>& argv, std::vector<CharNode>::iterator& vBookIter);
 
 	std::vector<LineNode> readInBookFile(const std::unique_ptr<Arguments>& argv, std::vector<LineNode>::iterator& vBookIter);

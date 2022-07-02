@@ -59,3 +59,19 @@ public:
 
 	std::string returnArg(int index);
 };
+
+class encodedObj {
+
+public:
+	int _line;
+	int _offset;
+	int _idx;
+	char _ch;
+
+	encodedObj(int line, int offset, int index, char ch) {
+		_line = line;
+		_offset = offset;
+		_idx = index;
+		_ch = ch;
+	}	
+};
