@@ -9,19 +9,19 @@
 #include "nodeclasses.h"
 
 namespace work {
-	void buildVector(std::vector<CharNode>& v);
+	void build_vector(std::vector<CharNode>& v);
 
-	int generateBookfile(const std::unique_ptr<Arguments>& argv);
+	int generate_bookfile(const std::unique_ptr<Arguments>& argv);
 
-	int executeEncoding(const std::unique_ptr<Arguments>& argv);
+	int execute_encoding(const std::unique_ptr<Arguments>& argv);
 
-	int executeDecoding(const std::unique_ptr<Arguments>& argv);
+	int execute_decoding(const std::unique_ptr<Arguments>& argv);
 
-	bool sortCondition(encodedObj& lhs, encodedObj& rhs);
+	bool sort_condition(EncodedObj& lhs, EncodedObj& rhs);
 
-	int executeDecoding2(const std::unique_ptr<Arguments>& argv);
+	int execute_decoding2(const std::unique_ptr<Arguments>& argv);
 
-	std::vector<CharNode> readInBookFile(const std::unique_ptr<Arguments>& argv, std::vector<CharNode>::iterator& vBookIter);
+	std::vector<CharNode> read_in_bookfile(const std::unique_ptr<Arguments>& argv, std::vector<CharNode>::iterator& vBookIter);
 
-	std::vector<LineNode> readInBookFile(const std::unique_ptr<Arguments>& argv, std::vector<LineNode>::iterator& vBookIter);
+	std::vector<LineNode> read_in_bookfile(const std::unique_ptr<Arguments>& argv, std::vector<LineNode>::iterator& vBookIter);
 }

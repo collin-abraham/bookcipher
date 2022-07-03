@@ -8,28 +8,34 @@
 
 #include "utility.h"
 
-void utility::usagePrompt() {
-	std::cout << "Encoding: cipher.exe -e bookfile.txt source.txt output.txt\n"
-		<< "Encoding (generated bookfile): cipher.exe -g bookfile.txt source.txt output.txt\n"
-		<< "Decoding: cipher.exe -d bookfile.txt encoded.txt decoded.txt\n"
-		<< "Generate Bookfile: cipher.exe -g bookfile.txt";
+/* show the user the functionality of the program in a clear way */
+void utility::usage_prompt() {
+	const int colwidth = 30;
+
+	std::cout << std::setw(colwidth) << std::left << "Encoding:" << " cipher.exe - e bookfile.txt source.txt output.txt\n"
+		<< std::setw(colwidth) << std::left <<  "Encoding (generated bookfile):" << " cipher.exe -g bookfile.txt source.txt output.txt\n"
+		<< std::setw(colwidth) << std::left << "Decoding: " << "cipher.exe -d bookfile.txt encoded.txt decoded.txt\n"
+		<< std::setw(colwidth) << std::left << "Generate Bookfile: " << "cipher.exe -g bookfile.txt";
 }
 
-void utility::generatedBookfileWarning() {
+/* give the user a warning/reminder that the bookfile needs to be backed up */
+void utility::generate_bookfile_warning() {
 	std::cout << "!!! WARNING !!! save a copy of your new bookfile!\n";
 }
 
-void utility::invalidCharacter(std::string errorStr, int line, const std::string& fileName) {
+/* show the user a character that was invalid, including the filename and line number */
+void utility::invalid_character(std::string errorStr, int line, const std::string& fileName) {
 	std::cerr << "ERROR: Invalid character found in " << fileName << ": " << errorStr << " on line: " << line;
 }
 
-void utility::invalidCharacter(std::string errorStr, const std::string& fileName) {
+/* show the user a character that was invalid, including the filename */
+void utility::invalid_character(std::string errorStr, const std::string& fileName) {
 	std::cerr << "ERROR: Invalid character found in " << fileName << ": " << errorStr;
 }
 
 
-
-void utility::deletePartialFile(const std::string& fileName) {
+/* if during encoding we discover invalid characters.. this will delete the partially created decoding file */
+void utility::delete_partial_file(const std::string& fileName) {
 	try {
 		remove(fileName);
 	}
@@ -40,10 +46,11 @@ void utility::deletePartialFile(const std::string& fileName) {
 	std::cout << "--- Removed partial file: " << fileName << "\n";
 }
 
-void utility::showValidChars() {
+/* prompt the user with a small table of what characters are allowed in bookfiles and files to encode */
+void utility::show_valid_chars() {
 	std::cout << "\n\nValid Characters to use are: \n";
 
-	auto temp = utility::returnAcceptedCharsVector();
+	auto temp = utility::return_accepted_chars_vector();
 	std::vector<char>::iterator it = temp.begin();
 
 
@@ -62,14 +69,16 @@ void utility::showValidChars() {
 
 }
 
-void utility::showValidDecodedExample() {
+/* if the decoded file encouters issues, prompt the user about what a file should look like: 'line offset\n'  */
+void utility::show_valid_decoded_example() {
 	std::cout << "\n\nA valid codified file can only contain whole numbers and spaces resembling: \n"
 		<< "4325 6\n12432 45\n671 51\n1042 53\netc...\n\n";
 
 	std::cout << "Terminating...\n";
 }
 
-const std::vector<char> utility::returnAcceptedCharsVector() {
+/* return a vector of all the characters that are allowed within bookfiles and encoded files */
+const std::vector<char> utility::return_accepted_chars_vector() {
 
 	std::vector<char> chars{
 		'0','1','2','3','4','5','6','7','8','9',
@@ -85,7 +94,7 @@ const std::vector<char> utility::returnAcceptedCharsVector() {
 /* loops through a string of character that is read in.. compares it to the vector of acceptable
 * characters.. if it is unable to find the character:
 * it returns the string with the unaccepted char and in turn it kills the program */
-std::string utility::acceptedChars(const std::string& strLine, std::vector<char>& checkVec) {
+std::string utility::accepted_chars(const std::string& strLine, std::vector<char>& checkVec) {
 	
 	std::string returnString = "";
 	std::vector<char>::iterator it;
@@ -106,7 +115,8 @@ std::string utility::acceptedChars(const std::string& strLine, std::vector<char>
 	return returnString;
 }
 
-std::string utility::checkEncodedFile(const std::string& argv) {
+/* opens the encoded file, loops through it checking each character.. digits and spaces are all that is allowed*/
+std::string utility::check_encoded_file(const std::string& argv) {
 	
 	std::ifstream inFile(argv);
 
@@ -128,5 +138,7 @@ std::string utility::checkEncodedFile(const std::string& argv) {
 	}
 
 	inFile.close();
+
+	// an empty string should be returned unless there was an issue
 	return returnString;
 }

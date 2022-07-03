@@ -19,7 +19,7 @@ CharNode::CharNode (char c) { _top = c; }
 * this was necessary to prevent the iterator pointing to the wrong spot in the container
 * as the size increased this issue became more common
 */
-void CharNode::resetIter() { 
+void CharNode::reset_iter() { 
 		_loc_iter = _locations.begin();
 }
 
@@ -27,7 +27,7 @@ void CharNode::resetIter() {
 * if its not pointing to the end of the vector, increment.. otherwise reset it to .begin()
 * to keep it running in a circle over the values 
 */
-void CharNode::incrementIter() {
+void CharNode::increment_iter() {
 	if (_loc_iter != _locations.end())
 		_loc_iter++;
 	else
@@ -35,13 +35,13 @@ void CharNode::incrementIter() {
 }
 
 /* returns the main signifier of the struct */
-char CharNode::getChar() { return _top; }
+char CharNode::get_char() { return _top; }
 
 /* pushses a new location into the vector of a line and offset to match the char of _top */
-void CharNode::addLoc(int line, int offset) { _locations.push_back(std::make_pair(line, offset)); }
+void CharNode::add_loc(int line, int offset) { _locations.push_back(std::make_pair(line, offset)); }
 
 /* shuffles the pairs of line/offset in the vector to produce some randomness in the end cipher file */
-void CharNode::shuffleLoc() { std::random_shuffle(begin(_locations), end(_locations)); }
+void CharNode::shuffle_loc() { std::random_shuffle(begin(_locations), end(_locations)); }
 
 // -------------------------------------------------------------------------------------------
 // LineNode 
@@ -51,10 +51,10 @@ void CharNode::shuffleLoc() { std::random_shuffle(begin(_locations), end(_locati
 LineNode::LineNode(int c) { _top = c; }
 
 /* returns the main signifier of the struct */
-int LineNode::getLineValue() { return _top; }
+int LineNode::get_line_value() { return _top; }
 
 /* pushses a new location into the vector of a char and offset to match the line of _top */
-void LineNode::addLoc(char c, int offset) { _locations.push_back(std::make_pair(c, offset)); }
+void LineNode::add_loc(char c, int offset) { _locations.push_back(std::make_pair(c, offset)); }
 
 // -------------------------------------------------------------------------------------------
 // Arguments 
@@ -72,7 +72,7 @@ Arguments::Arguments(char* argv[], int num) {
 
 
 /* accesses the internal vector and calls .at() for index access similar to how you'd use argv[index] */
-std::string Arguments::returnArg(int index) {
+std::string Arguments::return_arg(int index) {
 	if ((size_t)index <= _args.size())
 		return _args.at(index);
 	else

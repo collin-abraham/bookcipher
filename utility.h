@@ -11,12 +11,13 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <memory> //std::unique_ptr<T>
 #include <random>
 
-// I could have used CPP 17 and avoided this, but it broke std::random_shuffle for some reason...
+// I could have used CPP 17 and avoided this, but it broke std::random_shuffle for some unknown reason...
 // so I kept it on CPP 14 and suppressed the warnings, used the experimental library
 #include <experimental/filesystem>
 using std::experimental::filesystem::remove;
@@ -24,23 +25,23 @@ using std::experimental::filesystem::filesystem_error;
 
 namespace utility {
 
-	std::string checkEncodedFile(const std::string& argv);
+	std::string check_encoded_file(const std::string& argv);
 
-	void usagePrompt();
+	void delete_partial_file(const std::string& fileName);
 
-	void generatedBookfileWarning();
+	void usage_prompt();
 
-	void invalidCharacter(std::string errorStr, const std::string& fileName);
+	void generate_bookfile_warning();
 
-	void invalidCharacter(std::string errorStr, int line, const std::string& fileName);
+	void invalid_character(std::string errorStr, const std::string& fileName);
 
-	void deletePartialFile(const std::string& fileName);
+	void invalid_character(std::string errorStr, int line, const std::string& fileName);
 
-	void showValidChars();
+	void show_valid_chars();
 
-	void showValidDecodedExample();
+	void show_valid_decoded_example();
 
-	const std::vector<char> returnAcceptedCharsVector();
+	const std::vector<char> return_accepted_chars_vector();
 
-	std::string acceptedChars(const std::string& strLine, std::vector<char>& checkVec);
+	std::string accepted_chars(const std::string& strLine, std::vector<char>& checkVec);
 }

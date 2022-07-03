@@ -1,4 +1,2 @@
-word
-word2
-word
-word2
+some words
+another sentence

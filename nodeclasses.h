@@ -19,15 +19,15 @@ public:
 
 	CharNode(char c);
 
-	void resetIter();
+	void reset_iter();
 
-	void incrementIter();
+	void increment_iter();
 
-	char getChar();
+	char get_char();
 
-	void addLoc(int line, int offset);
+	void add_loc(int line, int offset);
 
-	void shuffleLoc ();
+	void shuffle_loc();
 
 };
 
@@ -43,13 +43,13 @@ public:
 
 	LineNode(int c);
 
-	int getLineValue();
+	int get_line_value();
 
-	void addLoc(char c, int offset);
+	void add_loc(char c, int offset);
 
 };
 
-/* simple class to prevent passing pointer to arrays around the program, as suggested by Bjarne Stoustrup */
+/* simple class to circumvent passing a pointer to an array around the program, as suggested by Bjarne Stoustrup */
 class Arguments {
 
 public:
@@ -57,10 +57,15 @@ public:
 
 	Arguments(char* argv[], int num);
 
-	std::string returnArg(int index);
+	std::string return_arg(int index);
 };
 
-class encodedObj {
+//---------------------------------------------------------------
+// EXPERIMENTAL CLASSES
+//---------------------------------------------------------------
+
+/* A class that was used to experiment with an alternative method of decoding, work::execute_decoding2 */
+class EncodedObj {
 
 public:
 	int _line;
@@ -68,10 +73,24 @@ public:
 	int _idx;
 	char _ch;
 
-	encodedObj(int line, int offset, int index, char ch) {
+	EncodedObj(int line, int offset, int index, char ch) {
 		_line = line;
 		_offset = offset;
 		_idx = index;
 		_ch = ch;
 	}	
+};
+
+/* A class that was used to experiment with an alternative method of decoding, work::execute_decoding2 */
+class LineOffsetChar {
+public:
+	int _line;
+	int _offset;
+	char _ch;
+
+	LineOffsetChar(int line, int offset, char ch) {
+		_line = line;
+		_offset = offset;
+		_ch = ch;
+	}
 };
